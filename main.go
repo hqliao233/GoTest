@@ -13,6 +13,7 @@ func handerFunc(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprint(w, "这里是关于blog的内容12123123"+
 			"<a href=\"mailto:summer@example.com\">summer@example.com</a>")
 	} else {
+		w.WriteHeader(http.StatusNotFound)
 		fmt.Fprint(w, "_我不知道你在说什么_")
 	}
 
