@@ -2,11 +2,21 @@ package main
 
 import (
 	"fmt"
+	"html/template"
 	"net/http"
+	"net/url"
 	"strings"
+	"unicode/utf8"
 
 	"github.com/gorilla/mux"
 )
+
+// ArticlesFormData 文章数据类型
+type ArticlesFormData struct {
+	Title, Body string
+	URL         *url.URL
+	Errors      map[string]string
+}
 
 var router = mux.NewRouter()
 
@@ -35,27 +45,63 @@ func articlesIndexHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func articlesStoreHandler(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprint(w, "创建新的文章")
+	// Form会比PostForm多一些URL中自带的参数
+	title := r.PostFormValue("title")
+	body := r.PostFormValue("body")
+	errors := make(map[string]string)
+
+	// 标题
+	if title == "" {
+		errors["title"] = "标题不能为空"
+	} else if utf8.RuneCountInString(title) < 3 || utf8.RuneCountInString(title) > 40 {
+		errors["title"] = "标题长度必须在3到10之前"
+	}
+
+	// 内容
+	if body == "" {
+		errors["body"] = "内容不能为空"
+	} else if utf8.RuneCountInString(body) < 10 {
+		errors["body"] = "内容长度不能小于10"
+	}
+
+	// 检查是否有错误
+	if len(errors) == 0 {
+		fmt.Fprint(w, "验证通过!<br>")
+		fmt.Fprintf(w, "title 的值为: %v <br>", title)
+		fmt.Fprintf(w, "title 的长度为: %v <br>", len(title))
+		fmt.Fprintf(w, "body 的值为: %v <br>", body)
+		fmt.Fprintf(w, "body 的长度为: %v <br>", len(body))
+	} else {
+		storeURL, _ := router.Get("articles.store").URL()
+		data := ArticlesFormData{
+			Title:  title,
+			Body:   body,
+			URL:    storeURL,
+			Errors: errors,
+		}
+		tmpl, err := template.ParseFiles("resources/views/articles/create.gohtml")
+		if err != nil {
+			panic(err)
+		}
+
+		tmpl.Execute(w, data)
+	}
 }
 
 func articlesCreateHandler(w http.ResponseWriter, r *http.Request) {
-	html := `
-<!DOCTYPE html>
-<html lang="en">
-<head>
-	<title>创建文章 —— 我的技术博客</title>
-</head>
-<body>
-	<form action="%s" method="post">
-		<p><input type="text" name="title"></p>
-		<p><textarea name="body" cols="30" rows="10"></textarea></p>
-		<p><button type="submit">提交</button></p>
-	</form>
-</body>
-</html>
-`
 	storeURL, _ := router.Get("articles.store").URL()
-	fmt.Fprintf(w, html, storeURL)
+	data := ArticlesFormData{
+		Title:  "",
+		Body:   "",
+		URL:    storeURL,
+		Errors: nil,
+	}
+	tmpl, err := template.ParseFiles("resources/views/articles/create.gohtml")
+	if err != nil {
+		panic(err)
+	}
+
+	tmpl.Execute(w, data)
 }
 
 func forceHTMLMiddleware(next http.Handler) http.Handler {
