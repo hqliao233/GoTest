@@ -1,4 +1,4 @@
-module goblog
+module github.com/hqliao233/GoTest
 
 go 1.15
 

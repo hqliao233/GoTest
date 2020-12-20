@@ -31,7 +31,7 @@ func aboutHander(w http.ResponseWriter, r *http.Request) {
 
 func notFoundHandler(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNotFound)
-	fmt.Fprint(w, "_我不知道你在说什么_")
+	fmt.Fprint(w, "_我不知道你在说什么123")
 }
 
 func articlesShowHandler(w http.ResponseWriter, r *http.Request) {
