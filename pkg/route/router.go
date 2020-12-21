@@ -1,23 +1,24 @@
 package route
 
 import (
+	"goblog/pkg/logger"
 	"net/http"
 
 	"github.com/gorilla/mux"
 )
 
-// Router 路由对象
-var Router *mux.Router
+var router *mux.Router
 
-// Initialize 路由对象初始化
-func Initialize() {
-	Router = mux.NewRouter()
+// SetRouter 给router初始化
+func SetRouter(r *mux.Router) {
+	router = r
 }
 
 // NameToURL 路由名称转换为可访问的路由地址
 func NameToURL(routeName string, pairs ...string) string {
-	url, err := Router.Get(routeName).URL(pairs...)
+	url, err := router.Get(routeName).URL(pairs...)
 	if err != nil {
+		logger.LogError(err)
 		return ""
 	}
 	return url.String()
