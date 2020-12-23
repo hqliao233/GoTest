@@ -9,7 +9,7 @@ import (
 
 // Article 文章模型
 type Article struct {
-	ID    int64
+	model.BaseModel
 	Title string
 	Body  string
 }
@@ -36,5 +36,5 @@ func GetAll() ([]Article, error) {
 
 // Link 文章访问连接
 func (a Article) Link() string {
-	return route.NameToURL("articles.show", "id", strconv.FormatInt(a.ID, 10))
+	return route.NameToURL("articles.show", "id", strconv.FormatUint(a.ID, 10))
 }

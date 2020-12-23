@@ -2,11 +2,25 @@ package model
 
 import (
 	"goblog/pkg/logger"
+	"goblog/pkg/types"
+	"time"
 
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 	gormlogger "gorm.io/gorm/logger"
 )
+
+// BaseModel 模型基类
+type BaseModel struct {
+	ID        uint64    `gorm:"column:id;primaryKey;autoIncrement;not null"`
+	CreatedAt time.Time `gorm:"column:created_at;index"`
+	UpdatedAt time.Time `gorm:"column:updated_at;index"`
+}
+
+// GetStringID 获取string类型的ID
+func (model BaseModel) GetStringID() string {
+	return types.Uint64ToString(model.ID)
+}
 
 // DB 数据库操作对象
 var DB *gorm.DB
