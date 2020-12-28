@@ -1,6 +1,7 @@
 package session
 
 import (
+	"goblog/pkg/config"
 	"goblog/pkg/logger"
 	"net/http"
 
@@ -8,7 +9,7 @@ import (
 )
 
 // Store gorilla sessions的储存库
-var Store = sessions.NewCookieStore([]byte("asdertigjubhgndhteshugnmjiugythjuhytgdst"))
+var Store = sessions.NewCookieStore([]byte(config.GetString("app.key")))
 
 // Session 会话操作对象
 var Session *sessions.Session
@@ -23,7 +24,7 @@ var Response http.ResponseWriter
 func StartSession(w http.ResponseWriter, r *http.Request) {
 	var err error
 
-	Session, err = Store.Get(r, "goblog-session")
+	Session, err = Store.Get(r, config.GetString("session.session_name"))
 	logger.LogError(err)
 
 	Request = r

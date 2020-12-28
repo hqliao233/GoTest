@@ -5,7 +5,13 @@ import (
 
 	"goblog/app/http/middlewares"
 	"goblog/bootstrap"
+	"goblog/config"
+	c "goblog/pkg/config"
 )
+
+func init() {
+	config.Initialize()
+}
 
 func main() {
 	// 数据库连接及数据库表初始化
@@ -15,5 +21,5 @@ func main() {
 	router := bootstrap.SetupRoute()
 
 	// 服务
-	http.ListenAndServe(":3000", middlewares.RemoveTrailingSlash(router))
+	http.ListenAndServe(":"+c.GetString("app.port"), middlewares.RemoveTrailingSlash(router))
 }

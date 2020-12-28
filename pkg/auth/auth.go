@@ -57,6 +57,7 @@ func Login(_user user.User) {
 // Logout 登出
 func Logout() {
 	session.Forget("uid")
+	session.Save()
 }
 
 // Check 检测是否以及登录
