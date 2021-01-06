@@ -3,6 +3,7 @@ package user
 import (
 	"goblog/pkg/model"
 	"goblog/pkg/password"
+	"goblog/pkg/route"
 	"goblog/pkg/types"
 )
 
@@ -37,4 +38,9 @@ func GetByEmail(email string) (User, error) {
 // ComparePassword 对比密码是否相同
 func (u User) ComparePassword(_password string) bool {
 	return password.CheckHash(_password, u.Password)
+}
+
+// Link 方法用来生成用户链接
+func (u User) Link() string {
+	return route.NameToURL("users.show", "id", u.GetStringID())
 }
